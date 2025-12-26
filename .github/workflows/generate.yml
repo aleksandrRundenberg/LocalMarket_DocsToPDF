@@ -1,1 +1,40 @@
+name: Generate PDFs
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 7 * * *"  # every day 07:00 UTC
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run generator
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          GOOGLE_TEMPLATE_DOC_ID: ${{ secrets.GOOGLE_TEMPLATE_DOC_ID }}
+          GOOGLE_TOKEN_JSON: ${{ secrets.GOOGLE_TOKEN_JSON }}
+        run: |
+          python generatePDFs.py
+
+      - name: Upload PDFs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdfs
+          path: out_pdfs/*.pdf
+          if-no-files-found: error
 
