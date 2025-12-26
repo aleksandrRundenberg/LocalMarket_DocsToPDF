@@ -1,9 +1,7 @@
-name: Generate PDFs
+name: Generate PDFs (manual)
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: "0 7 * * *"  # every day 07:00 UTC
 
 jobs:
   run:
@@ -37,4 +35,3 @@ jobs:
           name: pdfs
           path: out_pdfs/*.pdf
           if-no-files-found: error
-
